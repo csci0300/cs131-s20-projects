@@ -183,6 +183,9 @@ int test_realloc(vector_t* int_vect, vector<int>& int_sol) {
     return 0;
   }
 
+  // get initial capacity of the vector
+  size_t size1 = malloc_usable_size(int_vect->array);
+
   // this doubles as a test to add to an empty vector
   vector_add(int_vect, &numbers[1], 0);
   int_sol.insert(int_sol.begin(), numbers[1]);
@@ -198,16 +201,8 @@ int test_realloc(vector_t* int_vect, vector<int>& int_sol) {
   int_sol.insert(int_sol.begin(), numbers[0]);
   vector_add(int_vect, &numbers[3], 3);
   int_sol.insert(int_sol.begin() + 3, numbers[3]);
-  // theoretically, they should be calling realloc every time the vector reaches
-  // capacity (doubling the capacity). However, malloc allocates a minimum of 32
-  // bytes (24 of which are usable), so realloc won't actually need to allocate
-  // to more space until the vector has reached 24 bytes. This will happen after
-  // only after the capacity is expanded to at least 8 elements (16 -> 32 bytes
-  // reqiured for an int)
-  size_t size1 = malloc_usable_size(int_vect->array);
   vector_add_back(int_vect, &numbers[4]);
   int_sol.push_back(numbers[4]);
-  // this should cause capacity to double again (4 -> 8)
   // check that length = 3, capacity = 4, and realloc happened
   size_t size2 = malloc_usable_size(int_vect->array);
   if (int_vect->length == 5 && int_vect->capacity == 8 && size1 < size2) {
@@ -339,7 +334,7 @@ int test_get(vector_t* int_vect, vector<int>& int_sol) {
 }
 
 int test_insert_delete() {
-  // total = 2
+  // total = 1
   // start with empty vectors
   vector_t int_vect;
   initialize_vector(&int_vect, 4);
@@ -350,9 +345,7 @@ int test_insert_delete() {
     return 0;
   }
 
-  // continuously push/pop, realloc should not happen
-  size_t size1 = malloc_usable_size(int_vect.array);
-
+  // continuously push/pop
   vector_add_back(&int_vect, &numbers[0]);
   int_sol.push_back(numbers[0]);
   vector_delete_back(&int_vect);
@@ -370,8 +363,6 @@ int test_insert_delete() {
 
   vector_add_back(&int_vect, &numbers[0]);
   int_sol.push_back(numbers[0]);
-
-  size_t size2 = malloc_usable_size(int_vect.array);
 
   int points = do_compare_int(int_sol, &int_vect, 4);
 
@@ -381,10 +372,7 @@ int test_insert_delete() {
 
   destroy_vector(&int_vect);
 
-  if (size1 == size2) {
-    points++;
-  }
-  printf("Passed %d/2 insert and deletion tests.\n", points);
+  printf("Passed %d/1 insert and deletion tests.\n", points);
   return points;
 }
 
@@ -412,6 +400,6 @@ int main() {
   destroy_vector(&string_vect);
   destroy_vector(&int_vect);
 
-  printf("\n=====================\nTotal Score: %d out of 21\n", points);
+  printf("\n=====================\nTotal Score: %d out of 20\n", points);
   return 0;
 }
