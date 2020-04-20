@@ -121,8 +121,7 @@ int Server::start(int port, int n_workers) {
 
   // 6. Create a thread that runs `accept_clients_loop` to keep accepting client
   //    connections.
-  //    Store this thread in the server's `client_listener` field, and lastly,
-  //    detach this thread.
+  //    Store this thread in the server's `client_listener` field.
 
   return 0;
 }
@@ -131,14 +130,17 @@ std::unordered_map<uint64_t, uint64_t> Server::stop() {
   // TODO: implement
   // 1. Set the server's `is_stopped` field to true.
 
-  // 2. Close the server's `listener_fd` socket descriptor with the `close`
-  //    system call. Join the `request_listener` thread.
+  // 2. Stop the server from accepting further connections. To do so, call the
+  //    `shutdown` system call on the server's `listener_fd` socket descriptor;
+  //    and pass `SHUT_RDWR` as the second argument, which shuts the socket down
+  //    for reading and writing.
+  //    Join the `request_listener` thread.
 
   // 3. Stop the work queue. Flush the content of the queue, and free each
   //    request struct (which was heap-allocated when it was created) with the
   //    `delete` keyword.
 
-  // 4. Join all workers threads.
+  // 4. Join all workers threads, and join the client listener thread.
 
   /* NOTE: At this point, server is now in a single-threaded state */
 
