@@ -1,0 +1,29 @@
+syntax = "proto3";
+import "google/protobuf/empty.proto";
+
+// this protobuf contains the RPCs for the RG members - Get, Put, and Append
+
+message GetRequest {
+    uint32 key = 1;
+}
+
+message GetResponse {
+    string data = 1;
+}
+
+message PutRequest {
+    uint32 key = 1;
+    string data = 2;
+}
+
+message AppendRequest {
+    uint32 key = 1;
+    string data = 2;
+}
+
+// RPCs for key-value server
+service Shardkv {
+    rpc Get (GetRequest) returns (GetResponse) {}
+    rpc Put (PutRequest) returns (google.protobuf.Empty) {}
+    rpc Append (AppendRequest) returns (google.protobuf.Empty) {}
+}
